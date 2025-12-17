@@ -205,14 +205,24 @@
         }
 
         #mute-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid white;
-            color: white;
-            padding: 8px;
+            background: rgba(61,43,31,0.6);
+            border: 1px solid var(--brass);
+            color: var(--brass);
+            padding: 0;
             border-radius: 50%;
             cursor: pointer;
             width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
+        #mute-btn svg {
+            width: 24px; 
+            height: 24px;
+            stroke: var(--brass);
+        }
+        
 
         /* MOBILE FIXES */
         @media (max-width: 600px) {
@@ -226,7 +236,7 @@
     <canvas id="snow-canvas"></canvas>
 
     <div class="controls">
-        <button id="mute-btn">🔊</button>
+        <button id="mute-btn"><svg id="icon-on" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg><svg id="icon-off" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg></button>
     </div>
 
     <div class="header">
@@ -244,7 +254,7 @@
             <h2 id="modal-title">Day X</h2>
             <p id="riddle-text">Riddle text goes here...</p>
             <input type="text" id="answer-input" placeholder="Your answer...">
-            <button onclick="checkAnswer()">Submit</button>
+            <button onclick="checkAnswer()">Cevapla</button>
         </div>
     </div>
 
@@ -394,12 +404,18 @@
 
         // AUDIO TOGGLE
         muteBtn.onclick = () => {
+            const iconOn=
+        document.getElementById('icon-on');
+            const iconOff=
+        document.getElementById('icon-off');        
             if (bgMusic.paused) {
                 bgMusic.play();
-                muteBtn.innerText = "🔊";
+                iconOn.style.display = "block";
+                iconOff.style.display = "none";
             } else {
                 bgMusic.pause();
-                muteBtn.innerText = "🔇";
+                iconOn.style.display = "block";
+                iconOff.style.display = "none";
             }
         };
 
@@ -411,6 +427,7 @@
 </body>
 
 </html>
+
 
 
 
