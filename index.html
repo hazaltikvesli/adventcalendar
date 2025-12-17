@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romantic Advent Calendar</title>
+    <style>
+        :root {
+            --walnut: #3d2b1f;
+            --walnut-light: #5d432e;
+            --brass: #d4af37;
+            --text-gold: #f3e5ab;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Playfair Display', serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        /* CABINET STYLING */
+        .cabinet-container {
+            perspective: 1200px;
+            z-index: 5;
+            width: 90vw;
+            max-width: 800px;
+        }
+
+        .cabinet {
+            background: var(--walnut);
+            border: 15px solid #2a1d15;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 120px;
+            gap: 10px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            border-radius: 4px;
+        }
+
+        /* Irregular Layout */
+        .box:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+        .box:nth-child(2) { grid-column: span 1; grid-row: span 1; }
+        .box:nth-child(3) { grid-column: span 1; grid-row: span 2; }
+        .box:nth-child(4) { grid-column: span 1; grid-row: span 1; }
+        .box:nth-child(5) { grid-column: span 2; grid-row: span 1; }
+        .box:nth-child(8) { grid-column: span 2; grid-row: span 1; }
+
+        .box {
+            position: relative;
+            background: #1a110a; /* Inside the box */
+            border: 2px solid #2a1d15;
+            overflow: visible;
+        }
+
+        /* THE DOOR */
+        .door {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--walnut-light);
+            border: 1px solid #4a3423;
+            z-index: 2;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backface-visibility: hidden;
+        }
+
+        .door::before {
+            content: '';
+            position: absolute;
+            right: 15px;
+            width: 10px; height: 10px;
+            background: var(--brass);
+            border-radius: 50%;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .door span {
+            font-size: 1.5rem;
+            color: var(--brass);
+            font-weight: bold;
+            opacity: 0.7;
+        }
+
+        .box.open .door {
+            transform: rotateY(-110deg);
+            pointer-events: none;
+        }
+
+        /* Content inside the box */
+        .content {
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .content img {
+            max-width: 100%; max-height: 100%;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .modal {
+            background: #fff;
+            color: #333;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: modalPop 0.3s ease-out;
+        }
+
+        .modal h2 { margin-bottom: 15px; color: var(--walnut); }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal button {
+            background: var(--walnut);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* ANIMATIONS */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake { animation: shake 0.2s ease-in-out 0s 2; }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* CONTROLS */
+        .controls {
+            position: fixed;
+            top: 20px; right: 20px;
+            z-index: 1000;
+        }
+
+        #mute-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px; height: 40px;
+        }
+
+        /* MOBILE FIXES */
+        @media (max-width: 600px) {
+            .cabinet { grid-auto-rows: 80px; padding: 5px; }
+            .header h1 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="controls">
+        <button id="mute-btn">🔊</button>
+    </div>
+
+    <div class="header">
+        <h1>Romantic Advent Calendar</h1>
+        <p>Solve riddles to unlock each day's surprise</p>
+    </div>
+
+    <div class="cabinet-container">
+        <div class="cabinet" id="cabinet">
+            </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-title">Day X</h2>
+            <p id="riddle-text">Riddle text goes here...</p>
+            <input type="text" id="answer-input" placeholder="Your answer...">
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop src="audio.mp3"></audio>
+    <audio id="snd-creak" src="https://assets.mixkit.co/active_storage/sfx/1066/1066-preview.mp3"></audio>
+    <audio id="snd-chime" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+    <audio id="snd-rattle" src="https://assets.mixkit.co/active_storage/sfx/2853/2853-preview.mp3"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        /** * DATA CONFIGURATION
+         * Easily edit riddles, answers, and images here
+         */
+        const calendarData = [
+            { id: 1, riddle: "I have keys but no locks. I have a space but no room. You can enter, but never leave. What am I?", answer: "Keyboard", img: "https://picsum.photos/200/200?random=1" },
+            { id: 2, riddle: "The more of this there is, the less you see. What is it?", answer: "Darkness", img: "https://picsum.photos/200/200?random=2" },
+            { id: 3, riddle: "What follows you everywhere but has no heart?", answer: "Shadow", img: "https://picsum.photos/200/200?random=3" },
+            { id: 4, riddle: "What has hands but cannot clap?", answer: "Clock", img: "https://picsum.photos/200/200?random=4" },
+            { id: 5, riddle: "What belongs to you, but others use it more than you do?", answer: "Name", img: "https://picsum.photos/200/200?random=5" },
+            { id: 6, riddle: "What gets wetter as it dries?", answer: "Towel", img: "https://picsum.photos/200/200?random=6" },
+            { id: 7, riddle: "I’m light as a feather, yet the strongest man can’t hold me for long. What am I?", answer: "Breath", img: "https://picsum.photos/200/200?random=7" },
+            { id: 8, riddle: "What starts with T, ends with T, and has T in it?", answer: "Teapot", img: "https://picsum.photos/200/200?random=8" },
+            { id: 9, riddle: "What is full of holes but still holds water?", answer: "Sponge", img: "https://picsum.photos/200/200?random=9" },
+            { id: 10, riddle: "The more you take, the more you leave behind. What am I?", answer: "Footsteps", img: "https://picsum.photos/200/200?random=10" },
+            { id: 11, riddle: "What has a head and a tail but no body?", answer: "Coin", img: "https://picsum.photos/200/200?random=11" },
+            { id: 12, riddle: "What is the most beautiful thing in my world?", answer: "You", img: "https://picsum.photos/200/200?random=12" },
+        ];
+
+        let currentProgress = parseInt(localStorage.getItem('adventProgress')) || 1;
+        let activeDay = null;
+
+        const cabinet = document.getElementById('cabinet');
+        const modal = document.getElementById('modal-overlay');
+        const bgMusic = document.getElementById('bg-music');
+        const muteBtn = document.getElementById('mute-btn');
+
+        // INITIALIZE CABINET
+        function init() {
+            calendarData.forEach(day => {
+                const box = document.createElement('div');
+                box.className = `box ${currentProgress > day.id ? 'open' : ''}`;
+                box.id = `box-${day.id}`;
+                
+                box.innerHTML = `
+                    <div class="content"><img src="${day.img}" alt="Surprise"></div>
+                    <div class="door" onclick="handleDoorClick(${day.id})">
+                        <span>${day.id}</span>
+                    </div>
+                `;
+                cabinet.appendChild(box);
+            });
+        }
+
+        // INTERACTION LOGIC
+        function handleDoorClick(id) {
+            const doorElement = document.querySelector(`#box-${id} .door`);
+            
+            if (id > currentProgress) {
+                // Locked
+                document.getElementById('snd-rattle').play();
+                doorElement.classList.add('shake');
+                setTimeout(() => doorElement.classList.remove('shake'), 400);
+                return;
+            }
+
+            if (id === currentProgress) {
+                activeDay = calendarData.find(d => d.id === id);
+                openModal();
+            }
+        }
+
+        function openModal() {
+            document.getElementById('modal-title').innerText = `Day ${activeDay.id}`;
+            document.getElementById('riddle-text').innerText = activeDay.riddle;
+            document.getElementById('answer-input').value = "";
+            modal.style.display = 'flex';
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answer-input').value.trim().toLowerCase();
+            const correct = activeDay.answer.toLowerCase();
+
+            if (input === correct) {
+                // Success
+                document.getElementById('snd-creak').play();
+                document.getElementById('snd-chime').play();
+                modal.style.display = 'none';
+                
+                const box = document.getElementById(`box-${activeDay.id}`);
+                box.classList.add('open');
+
+                if (activeDay.id === 12) {
+                    triggerFinale();
+                } else {
+                    currentProgress++;
+                    localStorage.setItem('adventProgress', currentProgress);
+                }
+            } else {
+                // Fail
+                const m = document.querySelector('.modal');
+                m.classList.add('shake');
+                setTimeout(() => m.classList.remove('shake'), 400);
+            }
+        }
+
+        function triggerFinale() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            setTimeout(() => {
+                alert("Yeni Yılın Kutlu Olsun Sevgilim! ❤️");
+            }, 1000);
+        }
+
+        // SNOW EFFECT
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let flakes = [];
+
+        function initSnow() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            flakes = [];
+            for(let i=0; i<150; i++) {
+                flakes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 3 + 1,
+                    d: Math.random() * 1
+                });
+            }
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            flakes.forEach(f => {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI*2, true);
+                f.y += Math.pow(f.d, 2) + 1;
+                f.x += Math.sin(f.y / 30);
+                if(f.y > canvas.height) { f.y = -10; f.x = Math.random()*canvas.width; }
+            });
+            ctx.fill();
+            requestAnimationFrame(drawSnow);
+        }
+
+        // AUDIO TOGGLE
+        muteBtn.onclick = () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                muteBtn.innerText = "🔊";
+            } else {
+                bgMusic.pause();
+                muteBtn.innerText = "🔇";
+            }
+        };
+
+        window.onresize = initSnow;
+        init();
+        initSnow();
+        drawSnow();
+    </script>
+</body>
+</html>
