@@ -215,14 +215,15 @@
             cursor: pointer;
         }
         .box.active {
-            box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.6); /* Altın sarısı parlama */
+            border: 1px solid var(--brass); /* Modal gibi ince altın çerçeve */
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.7); /* Modal parlama seviyesi */
             animation: glowPulse 2s infinite ease-in-out;
-            z-index: 5; /* Diğerlerinden biraz önde dursun */
+            z-index: 5;
         }
         @keyframes glowPulse {
-            0% { box-shadow: 0 0 15px 2px rgba(212, 175, 55, 0.4); }
-            50% { box-shadow: 0 0 30px 10px rgba(212, 175, 55, 0.8); }
-            100% { box-shadow: 0 0 15px 2px rgba(212, 175, 55, 0.4); }
+            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
         }
 
         /* ANIMATIONS */
@@ -341,11 +342,16 @@
 
         // INITIALIZE CABINET
         function init() {
+            const cabinet = document.getElementById('cabinet');
+            cabinet.innerHTML = ''; // Tabloyu temizle (güncellemelerde üst üste binmemesi için)
+    
             calendarData.forEach(day => {
+                const isOpened = currentProgress > day.id;
+                const isActive = currentProgress === day.id; // Sıradaki kutu mu?
                 const box = document.createElement('div');
-                box.className = `box ${currentProgress > day.id ? 'open' : ''}`;
+        // Eğer kutu açılmamışsa ve sıradakiyse 'active' sınıfını ekle
+                box.className = `box ${isOpened ? 'open' : ''} ${isActive ? 'active' : ''}`;
                 box.id = `box-${day.id}`;
-                
                 box.innerHTML = `
                     <div class="content"><img src="${day.img}" alt="Surprise"></div>
                     <div class="door" onclick="handleDoorClick(${day.id})">
@@ -384,24 +390,26 @@
         function checkAnswer() {
             const input = document.getElementById('answer-input').value.trim().toLowerCase();
             const correct = activeDay.answer.toLowerCase();
-
             if (input === correct) {
-                // Success
                 document.getElementById('snd-creak').play();
                 document.getElementById('snd-chime').play();
                 modal.style.display = 'none';
                 
                 const box = document.getElementById(`box-${activeDay.id}`);
                 box.classList.add('open');
-
+                box.classList.remove('active'); // Açılan kutunun parlamasını kaldır
+       
                 if (activeDay.id === 12) {
                     triggerFinale();
                 } else {
                     currentProgress++;
                     localStorage.setItem('adventProgress', currentProgress);
+            // Kapı açılma animasyonu bittikten sonra tabloyu yenile ki parlama bir sonrakine geçsin
+                    setTimeout(() => {
+                        init(); 
+                    }, 1200); 
                 }
             } else {
-                // Fail
                 const m = document.querySelector('.modal');
                 m.classList.add('shake');
                 setTimeout(() => m.classList.remove('shake'), 400);
@@ -476,6 +484,7 @@
 </body>
 
 </html>
+
 
 
 
