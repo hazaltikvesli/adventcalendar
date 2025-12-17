@@ -92,7 +92,7 @@
             justify-content: center;
             cursor: pointer;
             backface-visibility: hidden;
-            border-radius: 12px;
+            border-radius: 15px;
         }
 
         .door::before {
@@ -173,6 +173,16 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .box.active {
+            box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.6); /* Altın sarısı parlama */
+            animation: glowPulse 2s infinite ease-in-out;
+            z-index: 5; /* Diğerlerinden biraz önde dursun */
+        }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 15px 2px rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 30px 10px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 15px 2px rgba(212, 175, 55, 0.4); }
+        }
 
         /* ANIMATIONS */
         @keyframes shake {
@@ -250,18 +260,18 @@
          * Easily edit riddles, answers, and images here
          */
         const calendarData = [
-            { id: 1, riddle: "I have keys but no locks. I have a space but no room. You can enter, but never leave. What am I?", answer: "Keyboard", img: "https://picsum.photos/200/200?random=1" },
-            { id: 2, riddle: "The more of this there is, the less you see. What is it?", answer: "Darkness", img: "https://picsum.photos/200/200?random=2" },
-            { id: 3, riddle: "What follows you everywhere but has no heart?", answer: "Shadow", img: "https://picsum.photos/200/200?random=3" },
-            { id: 4, riddle: "What has hands but cannot clap?", answer: "Clock", img: "https://picsum.photos/200/200?random=4" },
-            { id: 5, riddle: "What belongs to you, but others use it more than you do?", answer: "Name", img: "https://picsum.photos/200/200?random=5" },
-            { id: 6, riddle: "What gets wetter as it dries?", answer: "Towel", img: "https://picsum.photos/200/200?random=6" },
-            { id: 7, riddle: "I’m light as a feather, yet the strongest man can’t hold me for long. What am I?", answer: "Breath", img: "https://picsum.photos/200/200?random=7" },
-            { id: 8, riddle: "What starts with T, ends with T, and has T in it?", answer: "Teapot", img: "https://picsum.photos/200/200?random=8" },
-            { id: 9, riddle: "What is full of holes but still holds water?", answer: "Sponge", img: "https://picsum.photos/200/200?random=9" },
-            { id: 10, riddle: "The more you take, the more you leave behind. What am I?", answer: "Footsteps", img: "https://picsum.photos/200/200?random=10" },
-            { id: 11, riddle: "What has a head and a tail but no body?", answer: "Coin", img: "https://picsum.photos/200/200?random=11" },
-            { id: 12, riddle: "What is the most beautiful thing in my world?", answer: "You", img: "https://picsum.photos/200/200?random=12" },
+            { id: 1, riddle: "I have keys but no locks. I have a space but no room. You can enter, but never leave. What am I?", answer: "Keyboard", img: "1.jpeg" },
+            { id: 2, riddle: "The more of this there is, the less you see. What is it?", answer: "2.jpeg" },
+            { id: 3, riddle: "What follows you everywhere but has no heart?", answer: "Shadow", img: "3.jpg" },
+            { id: 4, riddle: "What has hands but cannot clap?", answer: "Clock", img: "4.jpeg" },
+            { id: 5, riddle: "What belongs to you, but others use it more than you do?", answer: "Name", img: "5.jpeg" },
+            { id: 6, riddle: "What gets wetter as it dries?", answer: "Towel", img: "6.jpeg" },
+            { id: 7, riddle: "I’m light as a feather, yet the strongest man can’t hold me for long. What am I?", answer: "Breath", img: "7.jpg" },
+            { id: 8, riddle: "What starts with T, ends with T, and has T in it?", answer: "Teapot", img: "8.jpg" },
+            { id: 9, riddle: "What is full of holes but still holds water?", answer: "Sponge", img: "9.jpeg" },
+            { id: 10, riddle: "The more you take, the more you leave behind. What am I?", answer: "Footsteps", img: "10.JPG" },
+            { id: 11, riddle: "What has a head and a tail but no body?", answer: "Coin", img: "11.jpg" },
+            { id: 12, riddle: "What is the most beautiful thing in my world?", answer: "You", img: "12.jpg" },
         ];
 
         let currentProgress = parseInt(localStorage.getItem('adventProgress')) || 1;
@@ -401,3 +411,4 @@
 </body>
 
 </html>
+
