@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantic Advent Calendar</title>
+    
     <style>
         :root {
             --walnut: #3d2b1f;
@@ -73,6 +73,7 @@
             position: relative;
             background: #1a110a; /* Inside the box */
             border: 2px solid #2a1d15;
+            border-radius: 15px;
             overflow: visible;
         }
 
@@ -91,6 +92,7 @@
             justify-content: center;
             cursor: pointer;
             backface-visibility: hidden;
+            border-radius: 12px;
         }
 
         .door::before {
@@ -121,13 +123,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 5px;
+            padding: 0;
+            overflow: hidden;
         }
 
         .content img {
-            max-width: 100%; max-height: 100%;
+            width: 100%; 
+            height: 100%;
             object-fit: cover;
-            border-radius: 2px;
+            border-radius: 12px;
         }
 
         /* MODAL */
@@ -216,7 +220,7 @@
     </div>
 
     <div class="header">
-        <h1>Romantic Advent Calendar</h1>
+        
         <p>Solve riddles to unlock each day's surprise</p>
     </div>
 
@@ -395,4 +399,5 @@
         drawSnow();
     </script>
 </body>
+
 </html>
